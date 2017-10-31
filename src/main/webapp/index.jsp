@@ -8,6 +8,5 @@
 </head>
 <body>
 	<h1>Hello World!</h1>
-	<a>${sum}</a>
 </body>
 </html>

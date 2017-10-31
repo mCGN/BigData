@@ -6,10 +6,21 @@
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>CatDataServlet</display-name>
+  	<servlet-name>CatDataServlet</servlet-name>
+  	<servlet-class>com.neusoft.bigdata.web.servlet.CatDataServlet</servlet-class>
+  </servlet>
 	
 	<servlet-mapping>
 		<servlet-name>dispatcher</servlet-name>
 		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>CatDataServlet</servlet-name>
+		<url-pattern>/CatDataServlet</url-pattern>
 	</servlet-mapping>
   
 </web-app>
