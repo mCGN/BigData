@@ -1,0 +1,11 @@
+@charset "utf-8";
+/* CSS Document */
+
+@charset "utf-8";
+/* CSS Document */
+body{background-size:cover	;no-repeat;}
+a{text-decoration:none;color:#963;}
+b{color:#FFF;text-shadow: 3px 4px 3px #CD0;}
+.select_css{margin-top:257px;width:100px;height:40px;margin-right:12px;font-size:22px;    opacity: 0.8;}
+
+.submit .submit_css{float:left;margin-top:257px;margin-left:10px;width:100px;height:40px;background:#66F; font-size:16px;color:#CCC;font-weight:800;border-radius: 15px;cursor:pointer;outline:none;    opacity: 0.8;}
