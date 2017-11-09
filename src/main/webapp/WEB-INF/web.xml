@@ -20,7 +20,7 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>CatDataServlet</servlet-name>
-		<url-pattern>/CatDataServlet</url-pattern>
+		<url-pattern>/catdata</url-pattern>
 	</servlet-mapping>
   
 </web-app>

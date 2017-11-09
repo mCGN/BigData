@@ -20,7 +20,7 @@
       <scope>test</scope>
     </dependency>
 
-	<!-- spring begin -->
+<!-- spring begin -->
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-webmvc</artifactId>
@@ -58,6 +58,7 @@
 	</dependency>
 	<!-- spring end -->  
 
+	
 	<dependency>
 		<groupId>javax.servlet</groupId>
 		<artifactId>jstl</artifactId>
@@ -91,14 +92,6 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.5</version>
 		</dependency>
-		
-		<!-- https://mvnrepository.com/artifact/cglib/cglib -->
-		<dependency>
-		    <groupId>cglib</groupId>
-		    <artifactId>cglib</artifactId>
-		    <version>3.2.1</version>
-		</dependency>
-		
     
     
   </dependencies>

@@ -16,8 +16,6 @@ import com.neusoft.bigdata.dao.impl.Dao;
 import com.neusoft.bigdata.domain.NewHouse;
 import com.neusoft.bigdata.utils.BeanMapUtils;
 
-import net.sf.cglib.beans.BeanMap;
-
 public class NewHouseParser implements IParser<NewHouse> {
 
 //	Pattern chinesPattern = Pattern.compile("[\u4e00-\u9fa5]+");// 匹配中文字符串

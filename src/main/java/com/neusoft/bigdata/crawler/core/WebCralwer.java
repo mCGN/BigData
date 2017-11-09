@@ -3,8 +3,11 @@ package com.neusoft.bigdata.crawler.core;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
@@ -46,6 +49,22 @@ public class WebCralwer {
 	public void setUrlFilter(IUrlFilter filter) {
 		this.filter = filter;
 	}
+	
+	private String cookie=null;
+	
+	StringBuilder builder=new StringBuilder();
+	public void setCookie(HashMap<String, String>cookie){
+		Iterator<Entry<String, String>>iterator= cookie.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<String, String>item= iterator.next();
+			builder.append(item.getKey()).append("=").append(item.getValue()).append(";");
+		}
+		this.cookie= builder.substring(0, builder.length()-1);
+	}
+	
+	public void setCookie(String cookie){
+		this.cookie=cookie;
+	}
 
 	public void addURL(String url) {
 		ArrayList<String> list = new ArrayList<String>();
@@ -86,23 +105,11 @@ public class WebCralwer {
 		parser = null;
 		trash.clear();
 		queue.clear();
+		isRunning=false;
 	}
 
 	private boolean contain(String url) {
 		return queueBloomFilter.contains(url) || trashBloomFilter.contains(url);
-	}
-
-	/**
-	 * 爬取网页中所有a标签中的href的值，
-	 */
-	private void catUrl(Document doc) {
-		Elements a = doc.getElementsByTag("a");
-		ArrayList<String> urls = new ArrayList<String>();
-		for (Element e : a) {
-			String href = e.attr("href");
-			urls.add(href);
-		}
-		addAllURL(urls);
 	}
 
 	private static boolean isRunning = false;
@@ -127,35 +134,59 @@ public class WebCralwer {
 	}
 
 	private ResponseHandler handler = new ResponseHandler();
-
+	private CloseableHttpClient client = ConnectionManager.getHttpClient();
+	/**
+	 * 发送HttpRequest请求 获取网页内容
+	 * @param url
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public Document request(String url) throws ClientProtocolException, IOException {
-		CloseableHttpClient client = ConnectionManager.getHttpClient();
 		HttpGet request = new HttpGet(url);
 		request.addHeader("User-Agent", constant.User_Agent);
-		request.addHeader("cookie", constant.cookies);
+		if (!this.cookie.isEmpty()) {//设置cookie
+			request.addHeader("cookie", this.cookie);
+		}
 		RequestConfig config = RequestConfig.custom().setConnectTimeout(3000).build();
 		request.setConfig(config);
 		return client.execute(request, handler);
 	}
-
+	
+	/**
+	 * 获取取网页中所有a标签中的href的值，
+	 */
+	private void catUrl(Document doc) {
+		Elements a = doc.getElementsByTag("a");
+		ArrayList<String> urls = new ArrayList<String>();
+		for (Element e : a) {
+			String href = e.attr("href");
+			urls.add(href);
+		}
+		addAllURL(urls);
+	}
+	
+	/**
+	 * 爬虫任务
+	 */
 	private Runnable task = new Runnable() {
 		public void run() {
 			while (isRunning) {
-				String url = getFirstURL();// 获取第一个url
-				if (url == null) {// 判断url是否为空
+				String url = getFirstURL();// 获取队列中第一个url
+				if (url.isEmpty()) {// 判断url是否为空
 					System.out.println("url is null");
 					try {
 						Thread.currentThread().sleep(1000);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					continue;
 				} else {
-					System.out.println("is running");
+//					System.out.println("is running");
 				}
 				try {
 					Document doc = null;
+					//1.获取网页内容
 					doc = request(url);
 					// doc= Jsoup.connect(url).cookies(constant.getCookieMap())
 					// .header("User-Agent",
@@ -164,8 +195,12 @@ public class WebCralwer {
 					// UBrowser/6.2.3637.220 Safari/537.36")
 					// .timeout(5000)
 					// .get();
+					
+					//2.解析 并获得数据
 					ArrayList<Base> data = parser.parse(url, doc);
+					//3.处理得到的数据
 					parser.onCompleted(data);
+					//4.获取网页中所有的URL
 					catUrl(doc);
 				} catch (IOException e1) {
 					e1.printStackTrace();
