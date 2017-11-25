@@ -1,6 +1,9 @@
 package com.neusoft.bigdata.crawler.parser;
 
 import java.util.ArrayList;
+
+import org.bson.BSONObject;
+import org.bson.types.ObjectId;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -8,6 +11,7 @@ import org.jsoup.select.Elements;
 import com.google.gson.Gson;
 import com.neusoft.bigdata.crawler.core.IParser;
 import com.neusoft.bigdata.domain.RentingHouse;
+import com.neusoft.bigdata.service.utils;
 
 public class RentingHouseParser implements IParser<RentingHouse> {
 
@@ -62,9 +66,11 @@ public class RentingHouseParser implements IParser<RentingHouse> {
 				unitPrice=item.getElementsByClass("zu-side").text().trim();
 				
 				if (name!=null) {
-					RentingHouse house=new RentingHouse(name, tag, unitPrice, type, address, floor);
-					long timeStamp=System.currentTimeMillis();
-					house.set(url, timeStamp);
+					BSONObject msg= utils.getAreaMsg(address);
+					ObjectId areaId=msg==null?null:(ObjectId)msg.get("_id");
+					RentingHouse house=new RentingHouse(name, tag, unitPrice, type, address, floor,areaId);
+//					long timeStamp=System.currentTimeMillis();
+					house.setUrl(url);
 					data.add(house);
 				}
 			}

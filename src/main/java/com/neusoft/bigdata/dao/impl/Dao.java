@@ -15,6 +15,7 @@ import com.mongodb.client.model.InsertManyOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.neusoft.bigdata.common.Resources;
+import com.neusoft.bigdata.dao.BeanMapUtils;
 import com.neusoft.bigdata.dao.CURD;
 import com.neusoft.bigdata.dao.DBUtils;
 
@@ -37,20 +38,28 @@ public class Dao implements CURD {
 		}
 	}
 	
-	public synchronized void add(Map<String, Object>map) {
+	public  void insert(Map<String, Object>map) {
 		Document document=new Document(map);
 		collection.insertOne(document);
 	}
 	
-	public synchronized void addAll(ArrayList<Document>documents,InsertManyOptions options){
-		if (options==null) {
-			collection.insertMany(documents);
-		}else {
-			collection.insertMany(documents, options);
+	public  void insert(Document document) {
+//		Document document=new Document(map);
+		collection.insertOne(document);
+	}
+	
+	 public <T> void insert(T obj) {
+		Document doc=new Document(BeanMapUtils.beanToMap(obj));
+		collection.insertOne(doc);
+	}
+	
+	public <T> void insertAll(ArrayList<T>documents){
+		for (T document : documents) {
+			insert(document);
 		}
 	}
 
-	public synchronized boolean update(Bson filter,Bson update) {
+	public  boolean update(Bson filter,Bson update) {
 		UpdateResult result= collection.updateMany(filter, update);
 		return result.isModifiedCountAvailable();
 	}
@@ -64,7 +73,7 @@ public class Dao implements CURD {
 		return collection.find(filter, resultClass);
 	}
 
-	public synchronized DeleteResult delete(Bson filter) {
+	public  DeleteResult delete(Bson filter) {
 		DeleteResult result= collection.deleteMany(filter);
 		return result;
 	}
@@ -72,6 +81,7 @@ public class Dao implements CURD {
 
 	public void destroy(){
 		client.close();
+		
 	}
 	
 	

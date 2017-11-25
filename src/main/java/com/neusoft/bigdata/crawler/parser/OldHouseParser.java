@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bson.BSONObject;
+import org.bson.types.ObjectId;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -11,6 +13,7 @@ import org.jsoup.select.Elements;
 import com.google.gson.Gson;
 import com.neusoft.bigdata.crawler.core.IParser;
 import com.neusoft.bigdata.domain.OldHouse;
+import com.neusoft.bigdata.service.utils;
 
 public class OldHouseParser implements IParser<OldHouse> {
 
@@ -79,9 +82,11 @@ public class OldHouseParser implements IParser<OldHouse> {
 					}
 				}
 				if (name!=null) {
-					OldHouse oldHouse=new OldHouse(name, tag, unitPrice, totalPrice, type, address, area, floor, yrb);
-					long timeStamp=System.currentTimeMillis();
-					oldHouse.set(url, timeStamp);
+					BSONObject msg= utils.getAreaMsg(address);
+					ObjectId areaId=msg==null?null:(ObjectId)msg.get("_id");
+					OldHouse oldHouse=new OldHouse(name, tag, unitPrice, totalPrice, type, address, area, floor, yrb,areaId);
+//					long timeStamp=System.currentTimeMillis();
+					oldHouse.setUrl(url);
 					data.add(oldHouse);
 				}
 				

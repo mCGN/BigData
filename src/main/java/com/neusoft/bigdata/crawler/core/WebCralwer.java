@@ -37,8 +37,8 @@ public class WebCralwer {
 
 	Pattern pattern = Pattern.compile("^http[s]{0,1}://[^\\s]+[^\\.|jpg|gif|jpeg|png]$");
 
-	public void setPaeser(IParser<Base> parser) {
-		this.parser = parser;
+	public<T extends Base> void setPaeser(IParser<T> parser) {
+		this.parser = (IParser<Base>) parser;
 	}
 
 	IUrlFilter filter = null;
@@ -65,6 +65,11 @@ public class WebCralwer {
 	public void setCookie(String cookie){
 		this.cookie=cookie;
 	}
+	
+	public void setRoot(String url){
+		queue.add(url);
+		queueBloomFilter.add(url);
+	}
 
 	public void addURL(String url) {
 		ArrayList<String> list = new ArrayList<String>();
@@ -75,6 +80,9 @@ public class WebCralwer {
 	public void addAllURL(Collection<String> urls) {
 		if (filter != null) {
 			urls = filter.filter(urls);
+		}
+		if (urls==null) {
+			return;
 		}
 		if (!urls.isEmpty()) {
 			for (String url : urls) {
@@ -145,7 +153,7 @@ public class WebCralwer {
 	public Document request(String url) throws ClientProtocolException, IOException {
 		HttpGet request = new HttpGet(url);
 		request.addHeader("User-Agent", constant.User_Agent);
-		if (!this.cookie.isEmpty()) {//设置cookie
+		if (this.cookie!=null) {//设置cookie
 			request.addHeader("cookie", this.cookie);
 		}
 		RequestConfig config = RequestConfig.custom().setConnectTimeout(3000).build();
@@ -173,7 +181,7 @@ public class WebCralwer {
 		public void run() {
 			while (isRunning) {
 				String url = getFirstURL();// 获取队列中第一个url
-				if (url.isEmpty()) {// 判断url是否为空
+				if (url==null) {// 判断url是否为空
 					System.out.println("url is null");
 					try {
 						Thread.currentThread().sleep(1000);
@@ -188,14 +196,9 @@ public class WebCralwer {
 					Document doc = null;
 					//1.获取网页内容
 					doc = request(url);
-					// doc= Jsoup.connect(url).cookies(constant.getCookieMap())
-					// .header("User-Agent",
-					// "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36
-					// (KHTML, like Gecko) Chrome/55.0.2883.87
-					// UBrowser/6.2.3637.220 Safari/537.36")
-					// .timeout(5000)
-					// .get();
-					
+					if(doc==null){
+						continue;
+					}
 					//2.解析 并获得数据
 					ArrayList<Base> data = parser.parse(url, doc);
 					//3.处理得到的数据

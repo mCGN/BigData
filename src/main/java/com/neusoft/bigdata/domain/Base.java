@@ -1,40 +1,35 @@
 package com.neusoft.bigdata.domain;
 
+import org.bson.Document;
+import org.bson.types.ObjectId;
+
 public class Base {
-//	public String _id;
-	
-	public long time_stamp;
+//	public ObjectId _id;
 	
 	public String url;
 	
-	public void set(String url,long timeStamp){
-		this.url=url;
-		this.time_stamp=timeStamp;
+	protected Base(){
+//		set_id(new ObjectId());
 	}
-
-//	public String get_id() {
+	
+//	public ObjectId get_id() {
 //		return _id;
 //	}
 //
-//	public void set_id(String _id) {
+//	public void set_id(ObjectId _id) {
 //		this._id = _id;
 //	}
-
-	public long getTimeStamp() {
-		return time_stamp;
-	}
-
-	public void setTimeStamp(long timeStamp) {
-		this.time_stamp = timeStamp;
-	}
 
 	public String getUrl() {
 		return url;
 	}
+	
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setUrl(String url){
+		this.url=url;
 	}
+
+
 	
 	
 	

@@ -1,13 +1,7 @@
 package com.neusoft.bigdata.dao;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
-import com.mongodb.client.MongoDatabase;
-import com.neusoft.bigdata.common.Resources;
 
 public class DBUtils {
 	static MongoClientOptions options;
