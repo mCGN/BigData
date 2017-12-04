@@ -11,10 +11,10 @@ public class OldHouse extends House{
 	
 	
 	
-	public OldHouse(String name, String tag, String unitPrice, String totalPrice, String type, String address,
-			String measure, String floor, String yrb,ObjectId areaId) {
+	public OldHouse(String name, String tag, Double unitPrice, Double totalPrice, String type, String address,
+			String measure, String floor, String yrb) {
 //		this();
-		super(name, tag,  unitPrice,  type,  address,areaId);
+		super(name, tag,  unitPrice,  type,  address);
 		this.total_price = totalPrice;
 		this.measure = measure;
 		this.floor = floor;
@@ -25,7 +25,7 @@ public class OldHouse extends House{
 //	public String url;
 
 	
-	public String total_price;
+	public Double total_price;
 
 	public String measure;//面积
 	
@@ -36,13 +36,13 @@ public class OldHouse extends House{
 
 
 
-	public String getTotalPrice() {
+	public Double getTotalPrice() {
 		return total_price;
 	}
 
 
 
-	public void setTotalPrice(String totalPrice) {
+	public void setTotalPrice(Double totalPrice) {
 		this.total_price = totalPrice;
 	}
 

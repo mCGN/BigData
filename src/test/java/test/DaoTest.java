@@ -7,6 +7,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.mongodb.client.FindIterable;
+import com.neusoft.bigdata.dao.impl.Dal;
 import com.neusoft.bigdata.dao.impl.Dao;
 
 import junit.framework.TestCase;
@@ -43,6 +44,11 @@ public class DaoTest extends TestCase {
 //		map.put("name", "艾琳");
 //		map.put("age", 18);
 		dao.insert(student);
+	}
+	
+	public void test1(){
+		Dal dal=new Dal("127.0.0.1", "test", "students");
+		dal.write(new Document("name", "楼下小黑"));
 	}
 
 }

@@ -9,9 +9,9 @@ public class RentingHouse  extends House{
 	}
 	
 	
-	public RentingHouse(String name, String tag, String unitPrice, String type, String address, String floor,ObjectId areaId){
+	public RentingHouse(String name, String tag, Double unitPrice, String type, String address, String floor){
 //		this();
-		super(name, tag,  unitPrice,  type,  address,areaId);
+		super(name, tag,  unitPrice,  type,  address);
 		this.floor = floor;
 //		this.url=url;
 	}

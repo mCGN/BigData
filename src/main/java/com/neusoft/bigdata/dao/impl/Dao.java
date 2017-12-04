@@ -1,6 +1,7 @@
 package com.neusoft.bigdata.dao.impl;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ import com.neusoft.bigdata.dao.BeanMapUtils;
 import com.neusoft.bigdata.dao.CURD;
 import com.neusoft.bigdata.dao.DBUtils;
 
-public class Dao implements CURD {
+public class Dao implements CURD,Serializable {
 
 	private MongoClient client;
 	private MongoDatabase db;

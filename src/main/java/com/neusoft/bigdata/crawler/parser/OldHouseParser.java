@@ -17,6 +17,8 @@ import com.neusoft.bigdata.service.utils;
 
 public class OldHouseParser implements IParser<OldHouse> {
 
+
+	Pattern decimalPattern=Pattern.compile("[0-9]+[.]?[0-9]+");
 //	Pattern chinesPattern = Pattern.compile("[\u4e00-\u9fa5]+");// 匹配中文字符串
 //	Pattern numberPattern = Pattern.compile("[1-9]+");// 匹配正整数
 //
@@ -59,10 +61,20 @@ public class OldHouseParser implements IParser<OldHouse> {
 				String tag= house.child(1).getElementsByClass("tags-bottom").text().trim();
 				String totalPrice =house.getElementsByClass("price-det").text().trim();
 				String unitPrice=house.getElementsByClass("unit-price").text().trim();
+				Double total=-1.0;
+				Double unit=-1.0;
+				Matcher matcher1= decimalPattern.matcher(totalPrice);
+				if (matcher1.find()) {
+					total=Double.valueOf(matcher1.group())*10000;
+				}
+				Matcher matcher2= decimalPattern.matcher(unitPrice);
+				if (matcher2.find()) {
+					unit=Double.valueOf(matcher2.group())*10000;
+				}
 				String address=house.getElementsByClass("comm-address").text().trim();
 				Elements details= house.child(1).getElementsByClass("details-item");
 				String type = null;
-				String area=null;
+				String measure=null;
 				String floor=null;
 				String yrb=null;
 				if (!details.isEmpty()) {
@@ -72,7 +84,7 @@ public class OldHouseParser implements IParser<OldHouse> {
 						type=matcher.group(1).trim();
 					}
 					if (matcher.find()) {
-						area=matcher.group(1).trim();
+						measure=matcher.group(1).trim();
 					}
 					if (matcher.find()) {
 						floor=matcher.group(1).trim();
@@ -82,9 +94,9 @@ public class OldHouseParser implements IParser<OldHouse> {
 					}
 				}
 				if (name!=null) {
-					BSONObject msg= utils.getAreaMsg(address);
-					ObjectId areaId=msg==null?null:(ObjectId)msg.get("_id");
-					OldHouse oldHouse=new OldHouse(name, tag, unitPrice, totalPrice, type, address, area, floor, yrb,areaId);
+//					BSONObject msg= utils.getAreaMsg(address);
+//					ObjectId areaId=msg==null?null:(ObjectId)msg.get("_id");
+					OldHouse oldHouse=new OldHouse(name, tag, unit, total, type, address, measure, floor, yrb);
 //					long timeStamp=System.currentTimeMillis();
 					oldHouse.setUrl(url);
 					data.add(oldHouse);

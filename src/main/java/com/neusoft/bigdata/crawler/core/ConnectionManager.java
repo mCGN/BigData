@@ -8,6 +8,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.http.HttpHost;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -31,16 +32,19 @@ public class ConnectionManager {
 	private static int defaultMaxPerRoute = 25;
 
 	static {
-			SSLContext context = null;
+//		SSLContext context = null;
+		SSLConnectionSocketFactory factory=null;
 		try {
-			context=createIgnoreVerifySSL();
+			factory= new SSLConnectionSocketFactory(SSLContext.getDefault());
+//			context = createIgnoreVerifySSL();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory> create()
-				.register("https", new  SSLConnectionSocketFactory(context))
-				.register("http", new PlainConnectionSocketFactory()).build();
+				.register("https",factory)
+				.register("http", new PlainConnectionSocketFactory())
+				.build();
 		manager = new PoolingHttpClientConnectionManager(registry);
 		manager.setMaxTotal(maxTotal);
 		manager.setDefaultMaxPerRoute(defaultMaxPerRoute);
@@ -69,12 +73,22 @@ public class ConnectionManager {
 		return sc;
 	}
 
-	private static CloseableHttpClient client;
+	// private static CloseableHttpClient client;
 
 	public static CloseableHttpClient getHttpClient() {
-		if (client == null) {
-			client = HttpClients.custom().setConnectionManager(manager).build();
-		}
+		CloseableHttpClient client = HttpClients.custom().setConnectionManager(manager).build();
+		return client;
+	}
+	
+	/**
+	 * 设置代理ip
+	 * @param host
+	 * @param port
+	 * @return
+	 */
+	public static CloseableHttpClient getHttpClient(String host,int port) {
+		HttpHost httpHost=new HttpHost(host, port);
+		CloseableHttpClient client = HttpClients.custom().setConnectionManager(manager).setProxy(httpHost).build();
 		return client;
 	}
 

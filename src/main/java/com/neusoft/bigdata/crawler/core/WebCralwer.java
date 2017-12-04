@@ -41,8 +41,8 @@ public class WebCralwer {
 		this.parser = (IParser<Base>) parser;
 	}
 
+	
 	IUrlFilter filter = null;
-
 	/**
 	 * 设置url过滤器，所有从网页中抓来的网址都会经过这层过滤，
 	 */
@@ -50,10 +50,11 @@ public class WebCralwer {
 		this.filter = filter;
 	}
 	
+	
 	private String cookie=null;
 	
-	StringBuilder builder=new StringBuilder();
 	public void setCookie(HashMap<String, String>cookie){
+		StringBuilder builder=new StringBuilder();
 		Iterator<Entry<String, String>>iterator= cookie.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<String, String>item= iterator.next();
@@ -69,6 +70,11 @@ public class WebCralwer {
 	public void setRoot(String url){
 		queue.add(url);
 		queueBloomFilter.add(url);
+	}
+	
+	private long time=0;
+	public void setSleepTime(long time){
+		this.time=time;
 	}
 
 	public void addURL(String url) {
@@ -111,6 +117,7 @@ public class WebCralwer {
 		queueBloomFilter.reset();
 		trashBloomFilter.reset();
 		parser = null;
+		filter=null;
 		trash.clear();
 		queue.clear();
 		isRunning=false;
@@ -142,15 +149,12 @@ public class WebCralwer {
 	}
 
 	private ResponseHandler handler = new ResponseHandler();
-	private CloseableHttpClient client = ConnectionManager.getHttpClient();
 	/**
 	 * 发送HttpRequest请求 获取网页内容
 	 * @param url
-	 * @return
-	 * @throws ClientProtocolException
-	 * @throws IOException
 	 */
 	public Document request(String url) throws ClientProtocolException, IOException {
+		CloseableHttpClient client = ConnectionManager.getHttpClient();
 		HttpGet request = new HttpGet(url);
 		request.addHeader("User-Agent", constant.User_Agent);
 		if (this.cookie!=null) {//设置cookie
@@ -178,6 +182,7 @@ public class WebCralwer {
 	 * 爬虫任务
 	 */
 	private Runnable task = new Runnable() {
+
 		public void run() {
 			while (isRunning) {
 				String url = getFirstURL();// 获取队列中第一个url
@@ -189,9 +194,7 @@ public class WebCralwer {
 						e.printStackTrace();
 					}
 					continue;
-				} else {
-//					System.out.println("is running");
-				}
+				} 
 				try {
 					Document doc = null;
 					//1.获取网页内容
@@ -205,8 +208,13 @@ public class WebCralwer {
 					parser.onCompleted(data);
 					//4.获取网页中所有的URL
 					catUrl(doc);
+					if (time>0) {
+						Thread.currentThread().sleep(time);
+					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
 		}

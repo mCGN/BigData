@@ -8,33 +8,33 @@ public class NewHouse extends House {
 		super();
 	}
 
-	public NewHouse(String name, String tag, String unitPrice, String type, String address, String measure,ObjectId areaId) {
+	public NewHouse(String name, String tag, Double unitPrice, String type, String address, String measure,String province,String city,String area) {
 //		this();
-		super(name, tag,  unitPrice,  type,  address,areaId);
+		super(name, tag,  unitPrice,  type,  address);
 		this.name = name;
 		this.tag = tag;
-		this.unit_price = unitPrice;
+		this.unitPrice = unitPrice;
 		this.type = type;
 		this.address = address;
 		this.measure = measure;
+		this.province=province;
+		this.city=city;
+		this.area=area;
+		
 	}
-
-//	public String name;
-//
-//	public String tag;
-//
-//	public String unit_price;
-//
-//	public String type;//户型
-//
-//	public String address;
 
 	public String measure;//面积
 
+	public String province;
+	
+	public String city;
+	
+	public String area;
+	
 	@Override
 	public String toString() {
 		return "NewHouse [url=" + url + ", name=" + name + ", tag=" + tag + ", unitPrice="
-				+ unit_price + ", type=" + type + ", address=" + address + ", area=" + measure + "]";
+				+ unitPrice + ", type=" + type + ", address=" + address + ", area=" + measure + "]";
 	}
 
 	
@@ -47,5 +47,28 @@ public class NewHouse extends House {
 		this.measure = area;
 	}
 
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
 	
 }

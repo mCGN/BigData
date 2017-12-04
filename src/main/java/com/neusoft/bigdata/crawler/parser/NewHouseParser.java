@@ -24,6 +24,8 @@ import com.neusoft.bigdata.service.utils;
 
 public class NewHouseParser implements IParser<NewHouse> {
 
+	Pattern numPattern=Pattern.compile("[0-9]+");
+	Pattern measurePattern=Pattern.compile("[0-9]+[.]?[0-9]+");
 	Pattern houseTypePattern= Pattern.compile("户型：\\s(.+)\\s建筑面积：(.+)");
 	Gson gson= new Gson();
 
@@ -45,30 +47,68 @@ public class NewHouseParser implements IParser<NewHouse> {
 		Elements item_mod = doc.getElementsByClass("item-mod");
 		if (!item_mod.isEmpty()) {
 			for (Element item : item_mod) {
-				String name = item.getElementsByClass("items-name").html().trim();
-				String address = item.getElementsByClass("address").text().trim();
-				String price = item.getElementsByClass("price").text().trim();
-				String tag = item.getElementsByClass("tag").text().trim();
-				String url=item.attr("data-link").trim();
 				String type=null;
-				String area=null;
+				String measure=null;
 				//正则匹配 获取户型和面积
 				String huxing=item.getElementsByClass("huxing").text().trim();
 				Matcher matcher=houseTypePattern.matcher(huxing);
 				if (matcher.find()) {
 				 	type= matcher.group(1).trim();
-				 	area=matcher.group(2).trim();
+				 	measure=matcher.group(2).trim();
 				}
+				
+				String name = item.getElementsByClass("items-name").html().trim();
+				String address = item.getElementsByClass("address").text().trim();
+				String unitPrice = item.getElementsByClass("price").text().trim();
+				Double price=getPrice(unitPrice, measure);
+				
+				String tag = item.getElementsByClass("tag").text().trim();
+				String url=item.attr("data-link").trim();
+				
 				if (!name.isEmpty()) {
-					BSONObject msg= utils.getAreaMsg(address);
-					ObjectId areaId=msg==null?null:(ObjectId)msg.get("_id");
-					NewHouse house=new NewHouse(name, tag, price, type, address,area,areaId);
+					org.bson.Document msg= utils.getAreaMsg(address);
+					String province=null;
+					String city=null;
+					String area=null;
+					if (msg!=null) {
+						province=msg.getString("provice");
+						city=msg.getString("city");
+						area=msg.getString("area");
+					}
+					NewHouse house=new NewHouse(name, tag, price, type, address,measure,province,city,area);
 					house.setUrl(url);
 					data.add(house);
 				}
 			}
 		}
 		return data;
+	}
+	
+	private Double getPrice(String unitPrice,String measure){
+		Double price=-1.0;
+		if(unitPrice!=null){
+			Matcher matcher=measurePattern.matcher(unitPrice);//匹配价格的数字
+			if (unitPrice.contains("万")) {//以万为单位
+				if (matcher.find()) {
+					Double i=Double.valueOf(matcher.group());
+					i=i*10000;
+					if (measure==null) {
+						price=-1.0;
+					}else {
+						Matcher matcher2=measurePattern.matcher(measure);
+						if (matcher2.find()) {
+							double j=Double.valueOf(matcher2.group());
+							price=i/j;
+						}
+					}
+				}
+			}else{//以元为单位
+				if (matcher.find()) {
+					price=Double.valueOf(matcher.group());
+				}
+			}
+		}
+		return price;
 	}
 	
 	Dao dao=Instance.getNewHouseDao();
