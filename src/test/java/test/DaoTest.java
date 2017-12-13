@@ -48,7 +48,7 @@ public class DaoTest extends TestCase {
 	
 	public void test1(){
 		Dal dal=new Dal("127.0.0.1", "test", "students");
-		dal.write(new Document("name", "楼下小黑"));
+//		dal.write(new Document("name", "楼下小黑"));
 	}
 
 }

@@ -6,6 +6,12 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<h1>Hello World!卡西利亚斯</h1>
+<!--  
+	<form action="${pageContext.request.contextPath }/query" method="get">
+		<input type="text" name="keyword">
+		<input type="submit" value="搜索">
+	</form>
+-->
+	<a href="${pageContext.request.contextPath }/query?city=北京市">北京市</a>
 </body>
 </html>

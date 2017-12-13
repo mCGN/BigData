@@ -23,7 +23,7 @@ import org.jsoup.select.Elements;
 import com.neusoft.bigdata.common.constant;
 import com.neusoft.bigdata.common.bloomfilter.BloomFilter;
 import com.neusoft.bigdata.common.bloomfilter.CountBloomFilter;
-import com.neusoft.bigdata.domain.Base;
+import com.neusoft.bigdata.crawler.core.domain.Base;
 
 public class WebCralwer {
 

@@ -1,6 +1,6 @@
 package test.domain;
 
-import com.neusoft.bigdata.domain.Base;
+import com.neusoft.bigdata.crawler.core.domain.Base;
 
 public class KeyValue extends Base{
 	public KeyValue(Object k,Object v){

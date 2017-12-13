@@ -18,7 +18,6 @@ import com.neusoft.bigdata.crawler.core.IParser;
 import com.neusoft.bigdata.dao.BeanMapUtils;
 import com.neusoft.bigdata.dao.Instance;
 import com.neusoft.bigdata.dao.impl.Dao;
-import com.neusoft.bigdata.dao.impl.SparkDao;
 import com.neusoft.bigdata.domain.NewHouse;
 import com.neusoft.bigdata.service.utils;
 

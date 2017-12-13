@@ -6,9 +6,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<script type="text/javascript">
-		<!--  window.location.href=window.location.href+'index'  -->
-	</script>
 	<h1>Hello World!</h1>
 </body>
 </html>

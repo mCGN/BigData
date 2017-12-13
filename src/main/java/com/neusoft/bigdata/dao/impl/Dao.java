@@ -9,6 +9,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -79,6 +80,9 @@ public class Dao implements CURD,Serializable {
 		return result;
 	}
 
+	public DistinctIterable<String> distinct(String fieldName){
+		return collection.distinct(fieldName, String.class);
+	}
 
 	public void destroy(){
 		client.close();
