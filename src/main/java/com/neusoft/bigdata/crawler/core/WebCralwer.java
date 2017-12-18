@@ -21,22 +21,26 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.neusoft.bigdata.common.constant;
-import com.neusoft.bigdata.common.bloomfilter.BloomFilter;
-import com.neusoft.bigdata.common.bloomfilter.CountBloomFilter;
+import com.neusoft.bigdata.crawler.bloomfilter.BloomFilter;
+import com.neusoft.bigdata.crawler.bloomfilter.CountBloomFilter;
+import com.neusoft.bigdata.crawler.bloomfilter.Queue;
 import com.neusoft.bigdata.crawler.core.domain.Base;
+import com.neusoft.bigdata.crawler.core.domain.RequestHeaderBase;
 
-public class WebCralwer {
+public class WebCralwer extends RequestHeaderBase {
 
 	private ExecutorService executor = Executors.newCachedThreadPool();
 
-	private LinkedList<String> queue = new LinkedList<String>();
+	private Queue queue=new Queue();
+//	private LinkedList<String> queue = new LinkedList<String>();
 	private LinkedHashSet<String> trash = new LinkedHashSet<String>();
 	private IParser<Base> parser;
-	private CountBloomFilter queueBloomFilter = new CountBloomFilter();
+//	private CountBloomFilter queueBloomFilter = new CountBloomFilter();
 	private BloomFilter trashBloomFilter = new BloomFilter();
 
 	Pattern pattern = Pattern.compile("^http[s]{0,1}://[^\\s]+[^\\.|jpg|gif|jpeg|png]$");
 
+	@SuppressWarnings("unchecked")
 	public<T extends Base> void setPaeser(IParser<T> parser) {
 		this.parser = (IParser<Base>) parser;
 	}
@@ -51,8 +55,6 @@ public class WebCralwer {
 	}
 	
 	
-	private String cookie=null;
-	
 	public void setCookie(HashMap<String, String>cookie){
 		StringBuilder builder=new StringBuilder();
 		Iterator<Entry<String, String>>iterator= cookie.entrySet().iterator();
@@ -60,16 +62,13 @@ public class WebCralwer {
 			Entry<String, String>item= iterator.next();
 			builder.append(item.getKey()).append("=").append(item.getValue()).append(";");
 		}
-		this.cookie= builder.substring(0, builder.length()-1);
+		this.Cookie= builder.substring(0, builder.length()-1);
 	}
 	
-	public void setCookie(String cookie){
-		this.cookie=cookie;
-	}
 	
 	public void setRoot(String url){
 		queue.add(url);
-		queueBloomFilter.add(url);
+//		queueBloomFilter.add(url);
 	}
 	
 	private long time=0;
@@ -92,9 +91,9 @@ public class WebCralwer {
 		}
 		if (!urls.isEmpty()) {
 			for (String url : urls) {
-				if (!contain(url) && pattern.matcher(url).matches()) {
+				if (!contain(url)) {
 					queue.add(url);
-					queueBloomFilter.add(url);
+//					queueBloomFilter.add(url);
 				}
 			}
 		}
@@ -113,18 +112,19 @@ public class WebCralwer {
 		return trash.size();
 	}
 
-	public void reset() {
-		queueBloomFilter.reset();
+	private void reset() {
+//		queueBloomFilter.reset();
 		trashBloomFilter.reset();
 		parser = null;
 		filter=null;
 		trash.clear();
-		queue.clear();
+		queue.reset();
 		isRunning=false;
 	}
 
+	//检测url是否在已收录入队列中
 	private boolean contain(String url) {
-		return queueBloomFilter.contains(url) || trashBloomFilter.contains(url);
+		return queue.contains(url) || trashBloomFilter.contains(url);
 	}
 
 	private static boolean isRunning = false;
@@ -156,11 +156,25 @@ public class WebCralwer {
 	public Document request(String url) throws ClientProtocolException, IOException {
 		CloseableHttpClient client = ConnectionManager.getHttpClient();
 		HttpGet request = new HttpGet(url);
-		request.addHeader("User-Agent", constant.User_Agent);
-		if (this.cookie!=null) {//设置cookie
-			request.addHeader("cookie", this.cookie);
+		request.addHeader("User-Agent", UserAgent);
+		request.addHeader("Accept", Accept);
+		request.addHeader("Accept-Language", this.AcceptLanguage);
+		request.addHeader("Cache-Control", this.CacheControl);
+		request.addHeader("Connection", this.Connection);
+		request.addHeader("Upgrade-Insecure-Requests", this.UpgradeInsecureRequests);
+		if(this.Host!=null){
+			request.addHeader("Host", this.Host);
 		}
-		RequestConfig config = RequestConfig.custom().setConnectTimeout(3000).build();
+		if(Referer!=null){
+			request.addHeader("Referer", this.Referer);
+		}
+		if(AcceptEncoding!=null){
+			request.addHeader("Accept-Encoding", this.AcceptEncoding);
+		}
+		if (this.Cookie!=null) {//设置cookie
+			request.addHeader("Cookie", this.Cookie);
+		}
+		RequestConfig config = RequestConfig.custom().setConnectTimeout(3000).setSocketTimeout(3000).build();
 		request.setConfig(config);
 		return client.execute(request, handler);
 	}
@@ -189,28 +203,32 @@ public class WebCralwer {
 				if (url==null) {// 判断url是否为空
 					System.out.println("url is null");
 					try {
-						Thread.currentThread().sleep(1000);
+						Thread.currentThread();
+						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 					continue;
 				} 
 				try {
-					Document doc = null;
 					//1.获取网页内容
-					doc = request(url);
+					Document doc = request(url);
 					if(doc==null){
 						continue;
 					}
+					
 					//2.解析 并获得数据
 					ArrayList<Base> data = parser.parse(url, doc);
+					
 					//3.处理得到的数据
 					parser.onCompleted(data);
+					
 					//4.获取网页中所有的URL
 					catUrl(doc);
-					if (time>0) {
-						Thread.currentThread().sleep(time);
-					}
+					
+					//5.当前线程睡眠一段时间
+					Thread.currentThread();
+					Thread.sleep(time);
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				} catch (InterruptedException e) {

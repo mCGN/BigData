@@ -1,4 +1,4 @@
-package com.neusoft.bigdata.common.bloomfilter;
+package com.neusoft.bigdata.crawler.bloomfilter;
 
 import java.util.BitSet;
 

@@ -44,7 +44,7 @@ public class AnjukeCrawlerService implements ICrawlerService {
 	}
 	
 	public void reset(){
-		cralwer.reset();
+//		cralwer.reset();
 	}
 	
 	public void stop(){

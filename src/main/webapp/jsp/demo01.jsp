@@ -71,7 +71,6 @@
     	};
     </script>
     
-    <!-- 
 	<script type="text/javascript">
 		var jsonObj  ; 
 		var data =[];
@@ -99,7 +98,7 @@
 						        	}
 						    	]
 						});	
-			   			}
+			   		}
 			   			
 					};
 					
@@ -111,7 +110,6 @@
 	
 	</script>
 	
-	-->
 
   </body>
 </html>

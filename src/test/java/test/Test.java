@@ -20,7 +20,7 @@ import test.domain.Student;
 
 public class Test extends TestCase {
 
-	public void test() {
+	public void test() { 
 
 		ObjectId id = new ObjectId();
 		System.out.println(id.toString());
@@ -76,6 +76,18 @@ public class Test extends TestCase {
 		DistinctIterable<String>iterable= dao.distinct("province");
 		for (String string : iterable) {
 			System.out.println(string);
+		}
+	}
+	
+	public void test6(){
+		try {
+			System.out.println("1");
+			Thread.currentThread();
+			Thread.sleep(0);
+			System.out.println("2");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	

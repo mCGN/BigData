@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>index</title>
+	<title>list</title>
 	<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 	<script type="text/javascript" src="https://cdn.bootcss.com/uikit/2.25.0/js/uikit.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/uikit/2.25.0/css/uikit.min.css">
@@ -20,15 +20,23 @@
 	</nav>
 
 	<div class="uk-panel-box">
-		<div class="uk-panel-title">title</div>
-		<div>
+		<div class="uk-panel-title">List</div>
+		<div class="uk-grid">
+		
+			<div class="uk-width-1-10">
+				<a href="${pageContext.request.contextPath }/detail?city=北京市">北京市</a>
+			</div>
 			
-			this is index
-		</div>
-		<div>
-			<a href="${pageContext.request.contextPath }/statistics/avg">AVG</a>
 		</div>
 	</div>
+	
+	<script>
+		$(document).ready(function(){
+			$(".uk-grid").append('<div class="uk-width-1-10"><a href="${pageContext.request.contextPath }/detail?city=天津市">天津市</a></div>');
+			
+		})
+	</script>
 
 </body>
 </html>
+

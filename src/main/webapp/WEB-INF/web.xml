@@ -60,7 +60,7 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>DetailServlet</servlet-name>
-		<url-pattern>/detail</url-pattern>
+		<url-pattern>/data/detail</url-pattern>
 	</servlet-mapping>
   
 </web-app>
