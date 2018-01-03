@@ -3,6 +3,7 @@ package com.neusoft.bigdata.crawler.service.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,8 +16,8 @@ import com.neusoft.bigdata.crawler.core.IUrlFilter;
 import com.neusoft.bigdata.crawler.core.WebCralwer;
 import com.neusoft.bigdata.crawler.core.utils.Ping;
 import com.neusoft.bigdata.crawler.service.ICrawlerService;
-import com.neusoft.bigdata.dao.impl.Dao;
-import com.neusoft.bigdata.domain.ProxyEntity;
+import com.neusoft.bigdata.dao.impl.MongoDao;
+import com.neusoft.bigdata.proxy.ProxyEntity;
 
 public class ProxyCrawlerService implements ICrawlerService,IParser<ProxyEntity>,IUrlFilter {
 
@@ -24,14 +25,14 @@ public class ProxyCrawlerService implements ICrawlerService,IParser<ProxyEntity>
 	String host="proxy.mimvp.com";
 	String referer="http://www.kuaidaili.com/";
 	String acceptEncoding="gzip, deflate, br";
-	public void CatData(String url) {
+	public void CatData(String... url) {
 		if (url==null) {
-			url="http://www.kuaidaili.com/free/intr/1";
+			url[url.length]="http://www.kuaidaili.com/free/intr/1";
 		}
 //		System.out.println(url);
-		WebCralwer cralwer=new WebCralwer();
+		WebCralwer<ProxyEntity> cralwer=new WebCralwer<ProxyEntity>();
 		cralwer.setRequestHeader(acceptEncoding, cookie, host, null);
-		cralwer.setRoot(url);
+		cralwer.addRoot(url);
 		cralwer.setPaeser(this);
 		cralwer.setSleepTime(5000);
 		cralwer.setUrlFilter(this);
@@ -47,7 +48,7 @@ public class ProxyCrawlerService implements ICrawlerService,IParser<ProxyEntity>
 			Element port=tr.getElementsByAttributeValue("data-title", "PORT").first();
 			if (host!=null&&port!=null) {
 				ProxyEntity entity=new ProxyEntity();
-				entity.setHost(host.ownText());
+				entity.setIp(host.ownText());
 				entity.setPort(Integer.valueOf( port.ownText()));
 				list.add(entity);
 			}
@@ -55,24 +56,26 @@ public class ProxyCrawlerService implements ICrawlerService,IParser<ProxyEntity>
 		return list;
 	}
 
-	Dao dao=new Dao("data", "ip");
+	MongoDao dao=new MongoDao("data", "ip");
 	
 	public void onCompleted(ArrayList<ProxyEntity> object) {
 		for (ProxyEntity proxyEntity : object) {
-			System.out.println(proxyEntity.getHost()+":"+proxyEntity.getPort());
-			boolean isPing= Ping.ping(proxyEntity.getHost(), 6000);
+			System.out.println(proxyEntity.getIp()+":"+proxyEntity.getPort());
+			boolean isPing= Ping.ping(proxyEntity.getIp(), 6000);
 			if (isPing) {
 				dao.insert(proxyEntity);
 			}
 			System.out.println(isPing);
 		}
+
+//		return object.isEmpty()?false:true;
 		
 	}
 
 	//url filter 例 /free/intr/1/
 	Pattern pattern=Pattern.compile("/free/intr/([0-9]+/)?");
 	String h="http://www.kuaidaili.com";
-	public Collection<String> filter(Collection<String> urls) {
+	public List<String> filter(List<String> urls) {
 		Iterator<String>iterator= urls.iterator();
 		Collection<String>a=new ArrayList<String>();
 		while (iterator.hasNext()) {

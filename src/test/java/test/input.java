@@ -2,13 +2,14 @@ package test;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.bson.Document;
 import com.neusoft.bigdata.common.Resources;
 import com.neusoft.bigdata.crawler.core.IParser;
 import com.neusoft.bigdata.crawler.core.IUrlFilter;
 import com.neusoft.bigdata.crawler.core.WebCralwer;
-import com.neusoft.bigdata.dao.impl.Dao;
+import com.neusoft.bigdata.dao.impl.MongoDao;
 import test.domain.KeyValue;
 import test.parser.MyParser;
 
@@ -26,7 +27,7 @@ public class input {
 	}
 	
 	public  static void in() throws IOException{
-		Dao dao=new Dao("data", "city");
+		MongoDao dao=new MongoDao("data", "city");
 		String input=Resources.getResourceAsString("city.txt");
 		String[]temp1= input.split("#");
 		for (int i = 0; i < temp1.length; i++) {
@@ -52,16 +53,17 @@ public class input {
 	}
 	
 	public static void in2(){
-		WebCralwer cralwer=new WebCralwer();
+		WebCralwer<KeyValue> cralwer=new WebCralwer<KeyValue>();
 		cralwer.setUrlFilter(new IUrlFilter() {
-			
-			public Collection<String> filter(Collection<String> urls) {
+
+			public List<String> filter(List<String> urls) {
+				// TODO Auto-generated method stub
 				return null;
 			}
 		});
 		IParser<KeyValue> parser=new MyParser();
 		cralwer.setPaeser(parser);
-		cralwer.setRoot("https://www.anjuke.com/sy-city.html");
+		cralwer.addRoot("https://www.anjuke.com/sy-city.html");
 		cralwer.start(1);
 		
 	}

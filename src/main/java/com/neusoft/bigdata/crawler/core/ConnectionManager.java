@@ -1,5 +1,6 @@
 package com.neusoft.bigdata.crawler.core;
 
+import java.net.Proxy;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -12,7 +13,6 @@ import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
-import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -92,20 +92,16 @@ public class ConnectionManager {
 		CloseableHttpClient client = HttpClients.custom()
 				.setConnectionManager(manager)
 				.setDefaultRequestConfig(config)
-//				.setDefaultSocketConfig(SocketConfig.custom().setSoTimeout(3000).build())
 				.build();
 		return client;
 	}
 	
-	public static CloseableHttpClient getHttpClient(String host,int port) {
-		HttpHost httpHost=new HttpHost(host, port);
-		RequestConfig config=RequestConfig.custom()
-				.setSocketTimeout(3000)
-				.setConnectTimeout(3000)
-				.setConnectionRequestTimeout(3000)
+	public static CloseableHttpClient getHttpClient(HttpHost httpHost) {
+		CloseableHttpClient client = HttpClients.custom()
+				.setConnectionManager(manager)
 				.setProxy(httpHost)
 				.build();
-		return getHttpClient(config);
+		return client;
 	}
 
 }

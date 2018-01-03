@@ -1,48 +1,50 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
 <head>
-<title>爬虫</title>
-<link style="text/css" rel="stylesheet" href="./css/index.css" />
-<script type="text/javascript">
-	function Msumbit() {
-		var keyword = document.getElementById("keyword");
-
-	}
-</script>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<title>anjuke crawler</title>
 </head>
+<body>
+	<div>
+		<h1>anjuke crawler</h1>
+		<button id="start" >start</button><br>
+		<button id="stop" >stop</button><br>
+		<div id="tip"></div>
+	</div>
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#start').click(function () {
+				$.ajax({
+					url:"${pageContext.request.contextPath }/crawler/start",
+					success:function(data){
+						if(data=='ok'){
+							$("#tip").text('crawler is running!')
+						}else{
+							$("#tip").text('error!')
+						}
+					}
+				})
+			})
+			
+			$('#stop').click(function () {
+				$.ajax({
+					url:"${pageContext.request.contextPath }/crawler/stop",
+					success:function(data){
+						if(data=='ok'){
+							$("#tip").text('crawler is stop!')
+						}else{
+							$("#tip").text('error!')
+						}
+					}
+				})
+			})
+			
+		})
+	</script>
 
-<body background="./images/bg.jpg">
-	<hr />
-
-	<br />
-	<br />
-	<center>
-		<table border="0" cellspacing="0" cellpadding="5" align="center">
-
-			<tr>
-				<form id="form1" name="form1" method="post" action="#" method="get">
-
-					<td><select class="select_css" name="keyword">
-							<option value="lianjia">1</option>
-							<option value="taobao">2</option>
-							<option value="carhome">3</option>
-							<option value="dazhongdianping">4</option>
-							<option value="guahaowang">5</option>
-					</select></td>
-					<td><div class="submit">
-							<input class="submit_css" type="submit" name="sumbit"
-								value="CAT" onClick="Msumbit()" />
-						</div></td>
-				</form>
-
-			</tr>
-		</table>
-		<br />
-		<br />
-
-
-	</center>
 </body>
 </html>

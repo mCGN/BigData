@@ -1,21 +1,21 @@
 package com.neusoft.bigdata.dao;
 
-import com.neusoft.bigdata.dao.impl.Dao;
+import com.neusoft.bigdata.dao.impl.MongoDao;
 
 public class Instance {
 	
-	public static Dao getNewHouseDao(){
-		Dao dao=new Dao("data", "new_house");
+	public static MongoDao getNewHouseDao(){
+		MongoDao dao=new MongoDao("data", "new_house");
 		return dao;
 	}
 	
-	public static Dao getoldHouseDao(){
-		Dao dao=new Dao("data", "old_house");
+	public static MongoDao getoldHouseDao(){
+		MongoDao dao=new MongoDao("data", "old_house");
 		return dao;
 	}
 	
-	public static Dao getRentingHouseDao(){
-		Dao dao=new Dao("data", "renting_house");
+	public static MongoDao getRentingHouseDao(){
+		MongoDao dao=new MongoDao("data", "renting_house");
 		return dao;
 	}
 	

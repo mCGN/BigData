@@ -22,30 +22,22 @@ import com.neusoft.bigdata.crawler.core.IParser;
 import com.neusoft.bigdata.crawler.parser.NewHouseParser;
 import com.neusoft.bigdata.crawler.service.impl.AnjukeCrawlerService;
 import com.neusoft.bigdata.crawler.service.impl.ProxyCrawlerService;
-import com.neusoft.bigdata.domain.ProxyEntity;
+import com.neusoft.bigdata.proxy.ProxyEntity;
 import com.neusoft.bigdata.utils.FileUtils;
 
 public class CrawlerServiceTest {
 
 	public static void main(String[] args) {
-//		cat();
-		
-//		try {
-//			proxy();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}finally {
-//			System.out.println("finally");
-//		}
+		cat();
 		
 //		test1();
 		
-		try {
-			parse();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			parse();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 	
 	public static void test1(){
@@ -55,28 +47,7 @@ public class CrawlerServiceTest {
 	
 	public static void cat(){
 		AnjukeCrawlerService service=new AnjukeCrawlerService();
-		service.CatData("https://gz.fang.anjuke.com/loupan/all/p2/");
-	}
-	
-	/**
-	 * 测试ip是否可用
-	 * @throws ClientProtocolException
-	 * @throws IOException
-	 */
-	public static void proxy() throws ClientProtocolException, IOException{
-		CloseableHttpClient client= ConnectionManager.getHttpClient("220.179.214.213",808);
-//		https://www.cnblogs.com/jinjiyese153/p/6972331.html
-//		https://gz.fang.anjuke.com/loupan/all/p2/
-//		https://www.baidu.com/
-		HttpGet request=new HttpGet("https://www.cnblogs.com/jinjiyese153/p/6972331.html");
-		RequestConfig config=RequestConfig.custom().setProxy(new HttpHost("121.232.148.189",9000)).build();
-//		request.setConfig(config);
-		request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.0");
-		HttpResponse response= client.execute(request);
-		int code= response.getStatusLine().getStatusCode();
-		System.out.println("responceCode:"+code);
-//		String result=EntityUtils.toString(response.getEntity());
-//		System.out.println(result);
+		service.CatData("https://sz.fang.anjuke.com/loupan/all/p2/");
 	}
 	
 	public static  void  parse() throws IOException{

@@ -8,12 +8,12 @@ import java.util.regex.Pattern;
 import org.bson.Document;
 
 import com.mongodb.client.FindIterable;
-import com.neusoft.bigdata.dao.impl.Dao;
+import com.neusoft.bigdata.dao.impl.MongoDao;
 
 public class utils {
 
-	private static Dao dao2=new Dao("data", "city");
-	
+	private static MongoDao dao2=new MongoDao("data", "city");
+	//将地址映射到省份城市区域，例如：[ 广州 天河 ] ——》广东省 广州市 天河区
 	static public Document getAreaMsg(String address) {
 		ArrayList<String>arr=new ArrayList<String>();
 		Matcher matcher= Pattern.compile("[\u4e00-\u9fa5]+").matcher(address.substring(address.indexOf("[")+1, address.indexOf("]")));

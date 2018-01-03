@@ -10,6 +10,9 @@ import org.jsoup.nodes.Document;
 
 public class ResponseHandler implements org.apache.http.client.ResponseHandler<Document> {
 
+	/**
+	 * 处理http请求的responce,读取返回的html生成document对象返回
+	 */
 	public Document handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
 		Document document = null;
 		if (response.getStatusLine().getStatusCode() == 200) {

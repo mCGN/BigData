@@ -12,17 +12,17 @@ import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.bson.Document;
 
-import com.neusoft.bigdata.dao.impl.Dal;
+import com.neusoft.bigdata.dao.impl.SparkMongoUtils;
 import com.neusoft.bigdata.domain.KeyValue;
 
 import scala.Tuple2;
 
 public class NewHouseService implements Serializable {
 
-	static Dal dal;
+	static SparkMongoUtils dal;
 
 	public NewHouseService() {
-		dal = Dal.Instance("127.0.0.1", "data", "new_house");
+		dal = SparkMongoUtils.Instance("127.0.0.1", "data", "new_house");
 	}
 
 	private static final long serialVersionUID = 1L;

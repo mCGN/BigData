@@ -3,75 +3,74 @@ package com.neusoft.bigdata.crawler.core;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Map.Entry;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Pattern;
-
+import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicHeader;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.neusoft.bigdata.common.constant;
 import com.neusoft.bigdata.crawler.bloomfilter.BloomFilter;
-import com.neusoft.bigdata.crawler.bloomfilter.CountBloomFilter;
 import com.neusoft.bigdata.crawler.bloomfilter.Queue;
-import com.neusoft.bigdata.crawler.core.domain.Base;
 import com.neusoft.bigdata.crawler.core.domain.RequestHeaderBase;
+import com.neusoft.bigdata.proxy.IpPool;
+import com.neusoft.bigdata.proxy.ProxyEntity;
 
-public class WebCralwer extends RequestHeaderBase {
+import io.netty.channel.ConnectTimeoutException;
 
-	private ExecutorService executor = Executors.newCachedThreadPool();
+public class WebCralwer<T> extends RequestHeaderBase {
 
-	private Queue queue=new Queue();
-//	private LinkedList<String> queue = new LinkedList<String>();
-	private LinkedHashSet<String> trash = new LinkedHashSet<String>();
-	private IParser<Base> parser;
-//	private CountBloomFilter queueBloomFilter = new CountBloomFilter();
-	private BloomFilter trashBloomFilter = new BloomFilter();
+	private ExecutorService executor = Executors.newCachedThreadPool();//线程池
+	
+	private Queue queue=new Queue();//任务队列
+	private BloomFilter trash = new BloomFilter();//垃圾箱
+	
+	private IParser<T> parser;//解析器
+	private IUrlFilter filter = null;//url过滤器
+	
+	private long time=0;//每次任务完成后 线程休息的时间
+	private static boolean isRunning = false;//爬虫是否运行中
 
-	Pattern pattern = Pattern.compile("^http[s]{0,1}://[^\\s]+[^\\.|jpg|gif|jpeg|png]$");
+//	Pattern pattern = Pattern.compile("^http[s]{0,1}://[^\\s]+[^\\.|jpg|gif|jpeg|png]$");
 
-	@SuppressWarnings("unchecked")
-	public<T extends Base> void setPaeser(IParser<T> parser) {
-		this.parser = (IParser<Base>) parser;
+	public void setPaeser(IParser<T> parser) {
+		this.parser = parser;
 	}
 
 	
-	IUrlFilter filter = null;
 	/**
 	 * 设置url过滤器，所有从网页中抓来的网址都会经过这层过滤，
 	 */
 	public void setUrlFilter(IUrlFilter filter) {
 		this.filter = filter;
-	}
+	}	
 	
-	
-	public void setCookie(HashMap<String, String>cookie){
-		StringBuilder builder=new StringBuilder();
-		Iterator<Entry<String, String>>iterator= cookie.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Entry<String, String>item= iterator.next();
-			builder.append(item.getKey()).append("=").append(item.getValue()).append(";");
-		}
-		this.Cookie= builder.substring(0, builder.length()-1);
-	}
-	
-	
-	public void setRoot(String url){
+	/**
+	 * 添加URL种子
+	 * @param url
+	 */
+	public void addRoot(String url){
 		queue.add(url);
-//		queueBloomFilter.add(url);
 	}
 	
-	private long time=0;
+	public void addRoot(String[]url){
+		for (String string : url) {
+			queue.add(string);
+		}
+	}
+	
+	/**
+	 * 设置每次任务完成后，线程的休眠时间
+	 * @param time
+	 */
 	public void setSleepTime(long time){
 		this.time=time;
 	}
@@ -82,7 +81,11 @@ public class WebCralwer extends RequestHeaderBase {
 		addAllURL(list);
 	}
 
-	public void addAllURL(Collection<String> urls) {
+	/**
+	 * 添加URL
+	 * @param urls
+	 */
+	public void addAllURL(List<String> urls) {
 		if (filter != null) {
 			urls = filter.filter(urls);
 		}
@@ -93,47 +96,60 @@ public class WebCralwer extends RequestHeaderBase {
 			for (String url : urls) {
 				if (!contain(url)) {
 					queue.add(url);
-//					queueBloomFilter.add(url);
 				}
 			}
 		}
 	}
 
+	/**
+	 * 从任务队列中 拿任务
+	 * @return
+	 */
 	private synchronized String getFirstURL() {
 		String result = null;
 		if (!queue.isEmpty()) {
 			result = queue.remove();
-			trash.add(result);
 		}
 		return result;
 	}
-
-	public int size() {
-		return trash.size();
+	
+	/**
+	 * 已爬取url移动到trash
+	 * @param url
+	 */
+	private void moveToTrash(String url){
+		trash.add(url);
 	}
 
 	private void reset() {
-//		queueBloomFilter.reset();
-		trashBloomFilter.reset();
+		trash.reset();
 		parser = null;
 		filter=null;
-		trash.clear();
 		queue.reset();
 		isRunning=false;
 	}
 
-	//检测url是否在已收录入队列中
+	/**
+	 * 检测url是否在已收录入队列中
+	 */
 	private boolean contain(String url) {
-		return queue.contains(url) || trashBloomFilter.contains(url);
+		return queue.contains(url) || trash.contains(url);
 	}
 
-	private static boolean isRunning = false;
 
+	/**
+	 * 启动爬虫
+	 * @param thread 开启的线程数 最小为1
+	 */
 	public void start(int thread) {
 		if (parser == null) {
 			System.out.println("解析器为空");
 			return;
 		}
+		if (thread<1) {
+			thread=1;
+		}
+		initConfig();
 		isRunning = true;
 		for (int i = 0; i < thread; i++) {
 			executor.execute(task);
@@ -148,39 +164,56 @@ public class WebCralwer extends RequestHeaderBase {
 		return isRunning;
 	}
 
+	List<Header> headers=new ArrayList<Header>();//http-header
+	public void initConfig(){//初始化http-header
+		headers.add(new BasicHeader(HttpHeaders.ACCEPT, Accept));
+		headers.add(new BasicHeader(HttpHeaders.USER_AGENT, UserAgent));
+		headers.add(new BasicHeader(HttpHeaders.ACCEPT_LANGUAGE, AcceptLanguage));
+		headers.add(new BasicHeader(HttpHeaders.CACHE_CONTROL, CacheControl));
+		headers.add(new BasicHeader(HttpHeaders.CONNECTION, Connection));
+		headers.add(new BasicHeader("Upgrade-Insecure-Requests", UpgradeInsecureRequests));
+		
+		if(this.Host!=null){
+			headers.add(new BasicHeader(HttpHeaders.HOST, Host));
+		}
+		if(Referer!=null){
+			headers.add(new BasicHeader(HttpHeaders.REFERER, Referer));
+		}
+		if(AcceptEncoding!=null){
+			headers.add(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, AcceptEncoding));
+		}
+		if (this.Cookie!=null) {//设置cookie
+			headers.add(new BasicHeader("Cookie", Cookie));
+		}
+	}
+	
 	private ResponseHandler handler = new ResponseHandler();
 	/**
 	 * 发送HttpRequest请求 获取网页内容
 	 * @param url
 	 */
 	public Document request(String url) throws ClientProtocolException, IOException {
-		CloseableHttpClient client = ConnectionManager.getHttpClient();
+		ProxyEntity entity=IpPool.getIp();//获取代理ip
+		CloseableHttpClient client = ConnectionManager.getHttpClient(new HttpHost(entity.ip,entity.port));
 		HttpGet request = new HttpGet(url);
-		request.addHeader("User-Agent", UserAgent);
-		request.addHeader("Accept", Accept);
-		request.addHeader("Accept-Language", this.AcceptLanguage);
-		request.addHeader("Cache-Control", this.CacheControl);
-		request.addHeader("Connection", this.Connection);
-		request.addHeader("Upgrade-Insecure-Requests", this.UpgradeInsecureRequests);
-		if(this.Host!=null){
-			request.addHeader("Host", this.Host);
+		for (Header header : headers) {
+			request.addHeader(header);
 		}
-		if(Referer!=null){
-			request.addHeader("Referer", this.Referer);
+		Document doc=null;
+		try {
+			doc=client.execute(request, handler);
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("请求过程中报错："+e.getMessage());
+			addRoot(url);
+			IpPool.setIpInvalid(entity);
+			System.out.println("重新加入");
 		}
-		if(AcceptEncoding!=null){
-			request.addHeader("Accept-Encoding", this.AcceptEncoding);
-		}
-		if (this.Cookie!=null) {//设置cookie
-			request.addHeader("Cookie", this.Cookie);
-		}
-		RequestConfig config = RequestConfig.custom().setConnectTimeout(3000).setSocketTimeout(3000).build();
-		request.setConfig(config);
-		return client.execute(request, handler);
+		return doc;
 	}
 	
 	/**
-	 * 获取取网页中所有a标签中的href的值，
+	 * 获取取网页中所有url，
 	 */
 	private void catUrl(Document doc) {
 		Elements a = doc.getElementsByTag("a");
@@ -218,13 +251,17 @@ public class WebCralwer extends RequestHeaderBase {
 					}
 					
 					//2.解析 并获得数据
-					ArrayList<Base> data = parser.parse(url, doc);
+					ArrayList<T> data = parser.parse(url, doc);
 					
-					//3.处理得到的数据
-					parser.onCompleted(data);
+					if (!data.isEmpty()) {
+						//3.处理得到的数据
+						parser.onCompleted(data);
+					}
 					
 					//4.获取网页中所有的URL
 					catUrl(doc);
+					
+					moveToTrash(url);
 					
 					//5.当前线程睡眠一段时间
 					Thread.currentThread();

@@ -91,6 +91,7 @@ public class RentingHouseParser implements IParser<RentingHouse> {
 	public void onCompleted(ArrayList<RentingHouse> object) {
 		// TODO Auto-generated method stub
 
+//		return object.isEmpty()?false:true;
 	}
 
 }

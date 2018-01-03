@@ -23,44 +23,11 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
-  <servlet>
-  	<description>
-  	</description>
-  	<display-name>CatDataServlet</display-name>
-  	<servlet-name>CatDataServlet</servlet-name>
-  	<servlet-class>com.neusoft.bigdata.web.servlet.CatDataServlet</servlet-class>
-  </servlet>
-  <servlet>
-  	<description>
-  	</description>
-  	<display-name>AvgServlet</display-name>
-  	<servlet-name>AvgServlet</servlet-name>
-  	<servlet-class>com.neusoft.bigdata.web.servlet.AvgServlet</servlet-class>
-  </servlet>
-  <servlet>
-  	<description>
-  	</description>
-  	<display-name>DetailServlet</display-name>
-  	<servlet-name>DetailServlet</servlet-name>
-  	<servlet-class>com.neusoft.bigdata.web.servlet.DetailServlet</servlet-class>
-  </servlet>
-	
 	<servlet-mapping>
 		<servlet-name>dispatcher</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 	
-	<servlet-mapping>
-		<servlet-name>CatDataServlet</servlet-name>
-		<url-pattern>/catdata</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>AvgServlet</servlet-name>
-		<url-pattern>/avg</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>DetailServlet</servlet-name>
-		<url-pattern>/data/detail</url-pattern>
-	</servlet-mapping>
+	
   
 </web-app>

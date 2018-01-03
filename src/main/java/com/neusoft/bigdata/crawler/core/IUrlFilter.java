@@ -1,7 +1,7 @@
 package com.neusoft.bigdata.crawler.core;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface IUrlFilter {
-	Collection<String> filter(Collection<String>urls);
+	List<String> filter(List<String>urls);
 }

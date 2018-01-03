@@ -7,8 +7,8 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.mongodb.client.FindIterable;
-import com.neusoft.bigdata.dao.impl.Dal;
-import com.neusoft.bigdata.dao.impl.Dao;
+import com.neusoft.bigdata.dao.impl.SparkMongoUtils;
+import com.neusoft.bigdata.dao.impl.MongoDao;
 
 import junit.framework.TestCase;
 import test.domain.Student;
@@ -16,7 +16,7 @@ import test.domain.Student;
 public class DaoTest extends TestCase {
 
 	public void find() {
-		Dao dao = new Dao("test", "students");
+		MongoDao dao = new MongoDao("test", "students");
 		Document filter = new Document();
 		filter.put("age", new Document("$gt", 10));
 		FindIterable<Document> result = dao.find(filter);
@@ -26,7 +26,7 @@ public class DaoTest extends TestCase {
 	}
 
 	public void add() {
-		Dao dao = new Dao("test", "students");
+		MongoDao dao = new MongoDao("test", "students");
 		Student student=new Student("红汪汪", 999);
 		
 //		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -36,7 +36,7 @@ public class DaoTest extends TestCase {
 	}
 	
 	public void addAll() {
-		Dao dao = new Dao("test", "students");
+		MongoDao dao = new MongoDao("test", "students");
 		Student student=new Student("红汪汪", 999);
 		Student student2=new Student("kot", 123);
 		ArrayList<Student>list=new ArrayList<Student>();
@@ -47,7 +47,7 @@ public class DaoTest extends TestCase {
 	}
 	
 	public void test1(){
-		Dal dal=Dal.Instance("127.0.0.1", "test", "students");
+		SparkMongoUtils dal=SparkMongoUtils.Instance("127.0.0.1", "test", "students");
 //		dal.write(new Document("name", "楼下小黑"));
 	}
 

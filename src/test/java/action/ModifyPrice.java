@@ -1,4 +1,4 @@
-package test;
+package action;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -7,7 +7,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.mongodb.client.FindIterable;
-import com.neusoft.bigdata.dao.impl.Dao;
+import com.neusoft.bigdata.dao.impl.MongoDao;
 
 public class ModifyPrice {
 
@@ -17,7 +17,7 @@ public class ModifyPrice {
 	static Pattern measurePattern=Pattern.compile("[0-9]+[.]?[0-9]+");
 	
 	public static void main(String[] args) {
-		Dao dao=new Dao("data", "new_house");
+		MongoDao dao=new MongoDao("data", "new_house");
 		Document doc=new Document();
 		
 		FindIterable<Document>iterable= dao.find(doc);

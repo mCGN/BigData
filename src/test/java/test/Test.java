@@ -11,7 +11,7 @@ import org.bson.types.ObjectId;
 
 import com.mongodb.client.DistinctIterable;
 import com.neusoft.bigdata.dao.BeanMapUtils;
-import com.neusoft.bigdata.dao.impl.Dao;
+import com.neusoft.bigdata.dao.impl.MongoDao;
 import com.neusoft.bigdata.service.utils;
 import com.neusoft.bigdata.service.impl.NewHouseService;
 
@@ -72,7 +72,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test5(){
-		Dao dao=new Dao("data", "city");
+		MongoDao dao=new MongoDao("data", "city");
 		DistinctIterable<String>iterable= dao.distinct("province");
 		for (String string : iterable) {
 			System.out.println(string);

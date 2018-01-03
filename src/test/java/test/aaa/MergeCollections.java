@@ -4,7 +4,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.mongodb.client.FindIterable;
-import com.neusoft.bigdata.dao.impl.Dao;
+import com.neusoft.bigdata.dao.impl.MongoDao;
 
 public class MergeCollections {
 	
@@ -14,8 +14,8 @@ public class MergeCollections {
 	
 	//将city和new_house合并
 	public static void merge(){
-		Dao dao1=new Dao("data", "city");
-		Dao dao=new Dao("data", "new_house");
+		MongoDao dao1=new MongoDao("data", "city");
+		MongoDao dao=new MongoDao("data", "new_house");
 		Document filter=new Document();
 		FindIterable<Document>iterable= dao.find(filter);
 		for (Document document : iterable) {

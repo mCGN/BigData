@@ -109,7 +109,8 @@ public class OldHouseParser implements IParser<OldHouse> {
 
 
 	public  void onCompleted(ArrayList<OldHouse> object) {
-		
+
+//		return object.isEmpty()?false:true;
 	}
 
 }

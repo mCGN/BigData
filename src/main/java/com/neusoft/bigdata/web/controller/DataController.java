@@ -25,6 +25,15 @@ public class DataController {
 		return result;
 	}
 	
+	@RequestMapping(value={"/data/detail"},produces="text/html; charset=UTF-8")
+	public @ResponseBody String getDetail(String city,String tag){
+		NewHouseService service=new NewHouseService();
+		HashMap<String, Long> num= service.getNumByTag(city, tag);
+		Gson gson=new Gson();
+		String result=gson.toJson(num);
+		return result;
+	}
+	
 	@RequestMapping(value={"/data/cityavg"},produces="text/html; charset=UTF-8")
 	public @ResponseBody String getAvg(String city){
 	NewHouseService service=new NewHouseService();

@@ -3,6 +3,7 @@ package test;
 import java.io.IOException;
 import java.net.SocketException;
 
+import org.apache.http.HttpHost;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -24,7 +25,7 @@ public class ServiceTest {
 	}
 	
 	public static void test(){
-		CloseableHttpClient client= ConnectionManager.getHttpClient("220.179.214.213",808);
+		CloseableHttpClient client= ConnectionManager.getHttpClient(new HttpHost("220.179.214.213",808));
 		HttpUriRequest request=new HttpGet("https://guangzhou.anjuke.com/");
 		try {
 			CloseableHttpResponse response= client.execute(request);

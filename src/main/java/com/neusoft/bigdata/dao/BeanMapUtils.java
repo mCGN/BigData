@@ -7,10 +7,17 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * javabean和map之间的转换的工具类
+ * @author AE
+ */
 public class BeanMapUtils {
 
-	// javabean 转map
+	/**
+	 * javabean 转map
+	 * @param bean
+	 * @return
+	 */
 	public static <T> Map<String, Object> beanToMap(T bean)  {
 		Map<String, Object> map = new HashMap<String, Object>();
 		BeanInfo beanInfo;
@@ -31,7 +38,11 @@ public class BeanMapUtils {
 		return map;
 	}
 
-	// map 转 javabean
+	/**
+	 *  map 转 javabean
+	 * @param map
+	 * @param bean
+	 */
 	public static <T> void mapToBean(Map<String, Object> map, T bean) {
 		BeanInfo beanInfo;
 		try {
@@ -47,7 +58,6 @@ public class BeanMapUtils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//		return bean;
 	}
 
 //	public static <T> List<Map<String, Object>> objectsToMaps(List<T> objList) {

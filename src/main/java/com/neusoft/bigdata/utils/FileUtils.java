@@ -2,25 +2,49 @@ package com.neusoft.bigdata.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-import com.neusoft.bigdata.crawler.core.IParser;
-import com.neusoft.bigdata.crawler.service.impl.ProxyCrawlerService;
-import com.neusoft.bigdata.domain.ProxyEntity;
-
 public class FileUtils {
 	
-	public static String read(File file) throws IOException{
+	/**
+	 * 读取文件
+	 * @param file
+	 * @return
+	 */
+	public static String read(File file){
 		String result=null;
-		FileInputStream is=new FileInputStream(file);
-		byte[]b=new byte[is.available()];
-		is.read(b);
-		result=new String(b, Charset.forName("UTF-8"));
+		FileInputStream is = null;
+		byte[] b=null;
+		try {
+			is = new FileInputStream(file);
+			b=new byte[is.available()];
+			is.read(b);
+			result=new String(b, Charset.forName("UTF-8"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally {
+			if (is!=null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		return result;
 	}
 	
+	/**
+	 * 获取某个文件夹中所有文件的路径
+	 * @param file
+	 * @return
+	 */
 	public static ArrayList<String> getAllFilePath(File file){
 		ArrayList<String> result=new ArrayList<String>();
 		if (file.isDirectory()) {

@@ -1,13 +1,16 @@
 package com.neusoft.bigdata.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.mongodb.client.DistinctIterable;
+import com.neusoft.bigdata.dao.impl.MongoDao;
 
 @Controller
 public class IndexController {
@@ -21,6 +24,13 @@ public class IndexController {
 	@RequestMapping(value={"/list"})
 	public ModelAndView list() {
 		ModelAndView model=new ModelAndView("list");
+		MongoDao dao=new MongoDao("data", "city");
+		DistinctIterable<String>cityList=dao.getCollection().distinct("city",String.class);
+		ArrayList<String> arrayList=new ArrayList<String>();
+		for (String string : cityList) {
+			arrayList.add(string);
+		}
+		model.addObject("cityList", arrayList);
 		return model;
 	}
 	
@@ -42,7 +52,6 @@ public class IndexController {
 		ModelAndView modelAndView=new ModelAndView("price_avg");
 		return modelAndView;
 	}
-	
 	
 	
 }

@@ -37,8 +37,8 @@
 	</div>
 
 	<script type="text/javascript">
-		//环形图，
-		function ring(myChart,data1,data2) {
+		/*环形图设置 valueList:值集合 data2:图例集合*/
+		function ring(myChart,valueList,data2) {
 				var option={
 					tooltip: {
 				        trigger: 'item',
@@ -73,13 +73,14 @@
 								show: false
 							}
 						},
-						data:data1
+						data:valueList
 					}
 					]
 				};
 				myChart.setOption(option);
 		}
 
+		/*条形图设置*/
 		function bar(myChart,keyList,valueList) {
 			myChart.setOption({
 				title : {
@@ -102,6 +103,7 @@
 			});
 		}
 
+		/*价格按区间分组展示*/
 		function priceGrouping() {
 			var myChart = echarts.init(document.getElementById('second'));
 			myChart.showLoading();
@@ -125,9 +127,10 @@
 			})
 		}
 
-		function getTagNum() {
-			var tag="轨交房";
-			var myChart = echarts.init(document.getElementById('main'));
+		/*展示tag数量及占比*/
+		function getTagNum(echartsId,tag) {
+			// var tag="轨交房";
+			var myChart = echarts.init(document.getElementById(echartsId));
 			myChart.showLoading();
 			$.ajax({
 				url:"${pageContext.request.contextPath }/data/detail?city=${city}&tag="+tag,
@@ -147,7 +150,8 @@
 				}
 			})
 		}
-		
+
+		/*最大值和最小值*/
 		function maxandmin(){
 			$.ajax({
 				url:"${pageContext.request.contextPath }/data/maxandmin?city=${city}",
@@ -158,7 +162,8 @@
 				}
 			})
 		}
-		
+
+		/*求平均值*/
 		function getAvg(){
 			$.ajax({
 				url:"${pageContext.request.contextPath }/data/cityavg?city=${city}",
@@ -170,11 +175,38 @@
 			})
 		}
 
-		$(document).ready(function(){
-			getTagNum();
+		/*websocket 初始化*/
+		function initSocket() {
+			var ws;
+			if ('WebSocket' in window) {
+				var location=document.location;
+				var path='ws://'+document.domain+':'+location.port+'${pageContext.request.contextPath}'+'/noticeSocket'
+				ws=new WebSocket(path);
+				ws.onmessage=function (event) {
+					var data=event.data;
+					if (data=='recount') {
+						alert('recount')
+						request()
+					}
+				}
+				window.onbeforeunload=function () {
+					ws.close();
+				}
+			}else{
+				alert('浏览器不支持websocket')
+			}
+		}
+
+		function request() {
+			getTagNum("main","轨交房");
 			priceGrouping();
 			maxandmin();
 			getAvg();
+		}
+
+		$(document).ready(function(){
+			request()
+			initSocket()
 		})
 
 	</script>

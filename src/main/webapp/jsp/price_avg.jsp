@@ -33,7 +33,8 @@
 	</div>
 
 	<script type="text/javascript">
-		$(document).ready(function() {
+		//向服务器请求数据，并显示在页面上
+		function request() {
 			var jsonObj;
 			var myChart;
 			var nameValue = [];
@@ -71,6 +72,32 @@
 					}
 				}
 			})
+		}
+
+		function initSocket() {
+			var ws;
+			if ('WebSocket' in window) {
+				var location=document.location;
+				var path='ws://'+document.domain+':'+location.port+'${pageContext.request.contextPath}'+'/noticeSocket'
+				ws=new WebSocket(path);
+				ws.onmessage=function (event) {
+					var data=event.data;
+					if (data=='recount') {
+						alert('recount')
+						request()
+					}
+				}
+				window.onbeforeunload=function () {
+					ws.close();
+				}
+			}else{
+				alert('浏览器不支持websocket')
+			}
+		}
+
+		$(document).ready(function() {
+			initSocket();
+			request();
 		})
 	</script>
 
