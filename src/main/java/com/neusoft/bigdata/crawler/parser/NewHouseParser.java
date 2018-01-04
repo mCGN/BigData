@@ -139,7 +139,7 @@ public class NewHouseParser implements IParser<NewHouse> {
 	}
 	
 	public void recountMsg(){
-		HttpPost httpPost=new HttpPost("http:localhost:8080/bigdata/notice");
+		HttpPost httpPost=new HttpPost("http://localhost:8080/bigdata/notice");
 		List<NameValuePair> parameters=new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("action", "recount"));
 		try {

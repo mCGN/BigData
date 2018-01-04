@@ -19,6 +19,8 @@ public class IpPool {
 	private static LinkedList<ProxyEntity>pool=new LinkedList<ProxyEntity>();
 	private static int point=0;//游标
 
+	
+	
 	private static MongoDao dao;
 	private IpPool(){
 		
@@ -28,12 +30,15 @@ public class IpPool {
 		init();
 	}
 	
-	public static ProxyEntity getIp(){
+	public synchronized static ProxyEntity getIp(){
 		if (pool.isEmpty()) {
 			return null;
 		}
 		int size= pool.size();
 		point= point%size;
+		if (point>=size) {
+			point=0;
+		}
 		ProxyEntity entity=pool.get(point);
 		point++;
 		return entity;
@@ -59,11 +64,12 @@ public class IpPool {
 		}
 	}
 
-	public static void setIpInvalid(ProxyEntity entity){
+	public synchronized static void setIpInvalid(ProxyEntity entity){
 		Map<String, Object>map=BeanMapUtils.beanToMap(entity);
 		Document filter=new Document(map);
 		dao.update(filter, new Document("$set",new Document("available",false)));
 		pool.remove(entity);
+		point--;
 	}
 	
 	

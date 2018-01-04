@@ -185,7 +185,6 @@
 				ws.onmessage=function (event) {
 					var data=event.data;
 					if (data=='recount') {
-						alert('recount')
 						request()
 					}
 				}

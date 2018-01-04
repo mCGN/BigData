@@ -25,7 +25,7 @@ public class CrawlerController {
 	@RequestMapping(value={"/crawler/start"},produces="text/html; charset=utf-8")
 	public @ResponseBody String start(){
 		
-		service.CatData("https://www.anjuke.com/sy-city.html","https://guangzhou.anjuke.com");
+		service.CatData("https://sjz.fang.anjuke.com","https://fs.fang.anjuke.com","https://sh.fang.anjuke.com");
 		return "ok";
 	}
 

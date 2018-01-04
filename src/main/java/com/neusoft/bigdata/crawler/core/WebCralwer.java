@@ -194,7 +194,13 @@ public class WebCralwer<T> extends RequestHeaderBase {
 	 */
 	public Document request(String url) throws ClientProtocolException, IOException {
 		ProxyEntity entity=IpPool.getIp();//获取代理ip
-		CloseableHttpClient client = ConnectionManager.getHttpClient(new HttpHost(entity.ip,entity.port));
+		CloseableHttpClient client;
+		if (entity==null) {
+			client=ConnectionManager.getHttpClient();
+		}else {
+			System.out.println(entity.toString());
+			client = ConnectionManager.getHttpClient(new HttpHost(entity.ip,entity.port));
+		}
 		HttpGet request = new HttpGet(url);
 		for (Header header : headers) {
 			request.addHeader(header);
@@ -262,7 +268,7 @@ public class WebCralwer<T> extends RequestHeaderBase {
 					catUrl(doc);
 					
 					moveToTrash(url);
-					
+					System.out.println("已访问");
 					//5.当前线程睡眠一段时间
 					Thread.currentThread();
 					Thread.sleep(time);
